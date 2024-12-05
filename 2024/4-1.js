@@ -146,6 +146,4 @@ fs.readFile('./data.txt', 'utf8', (_, data) => {
   console.log(chunks.join('\n'));
 
   console.log({ total });
-
-  // between 2644 and 2652
 });
