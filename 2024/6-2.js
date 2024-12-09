@@ -63,39 +63,41 @@ fs.readFile('./data.txt', 'utf8', async (_, data) => {
         if (!deep) {
           if (!next) return;
 
-          const y = curr.y + dir.y;
-          const x = curr.x + dir.x;
+          if (next === '.') {
+            const y = curr.y + dir.y;
+            const x = curr.x + dir.x;
 
-          // console.log(`Try with O in y:${y}, x:${x}`);
-          const _map = JSON.parse(JSON.stringify(map));
-          _map[y][x] = 'O';
+            // console.log(`Try with O in y:${y}, x:${x}`);
+            const _map = JSON.parse(JSON.stringify(map));
+            _map[y][x] = 'O';
 
-          const _curr = { ...curr };
-          const _dir = { ...dir };
+            const _curr = { ...curr };
+            const _dir = { ...dir };
 
-          // await sleep(100);
-          const obstruction = await loop(_map, _curr, _dir, dirIndex, true);
-          if (obstruction) {
-            if (!obstructions.some((o) => o.y === y && o.x === x)) {
-              obstructions.push({ y, x });
+            // await sleep(100);
+            const obstruction = await loop(_map, _curr, _dir, dirIndex, true);
+            if (obstruction) {
+              if (!obstructions.some((o) => o.y === y && o.x === x)) {
+                obstructions.push({ y, x });
+              }
             }
           }
         }
-      }
 
-      if (['.', '^', '>', 'v', '<'].includes(next)) {
-        curr.y += dir.y;
-        curr.x += dir.x;
-        map[curr.y][curr.x] = ['^', '>', 'v', '<'][dirIndex];
-      }
+        if (['.', '^', '>', 'v', '<'].includes(next)) {
+          curr.y += dir.y;
+          curr.x += dir.x;
+          map[curr.y][curr.x] = ['^', '>', 'v', '<'][dirIndex];
+        }
 
-      if (!next) {
-        // console.log('Oops, out');
-        return;
-      }
+        if (!next) {
+          // console.log('Oops, out');
+          return;
+        }
 
-      if (next === ['^', '>', 'v', '<'][dirIndex]) {
-        return true;
+        if (next === ['^', '>', 'v', '<'][dirIndex]) {
+          return true;
+        }
       }
 
       // await sleep(100);
