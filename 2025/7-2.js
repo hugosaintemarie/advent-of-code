@@ -7,53 +7,44 @@ fs.readFile('./data', 'utf8', (_, data) => {
   let lines = data.split('\n').map((d) => d.split(''));
   // console.log(lines);
 
-  let n = 1;
-
-  for (let y = 0; y < lines.length; y++) {
+  for (let y = 2; y < lines.length; y++) {
     let line = lines[y];
     // console.log(line);
 
     for (let x = 0; x < lines[0].length; x++) {
       const char = line[x];
-      const above = lines[y - 1]?.[x];
 
-      if (!above) {
-        lines[y][x] = char;
-        continue;
-      }
+      if (char === '^' || (char === '.' && y === lines.length - 1)) {
+        // console.log({ x, y });
+        let val = 0;
+        let rowY = y - 1;
 
-      // console.log(char, above);
+        while (lines[rowY]) {
+          let cell = lines[rowY][x];
+          // console.log({ cell });
 
-      if (char === '.' && above === 'S') {
-        lines[y][x] = [n];
-      } else if (char === '.' && Array.isArray(above)) {
-        lines[y][x] = [...above];
-      } else if (char === '^' && above !== '.') {
-        if (lines[y][x - 1] === '.') {
-          lines[y][x - 1] = [...above];
-        } else if (Array.isArray(lines[y][x - 1])) {
-          lines[y][x - 1].push(...above);
-        }
+          if (cell === '^' || !isNaN(cell)) break;
+          if (cell === 'S') val = 1;
 
-        lines[y][x] = char;
+          let left = lines[rowY][x - 1];
+          let right = lines[rowY][x + 1];
 
-        if (lines[y][x + 1] === '.') {
-          lines[y][x + 1] = [];
-
-          for (const _id of above) {
-            n++;
-            lines[y][x + 1].push(n);
+          if (!isNaN(left)) {
+            val += left;
           }
+
+          if (!isNaN(right)) {
+            val += right;
+          }
+
+          rowY--;
         }
-      } else if (Array.isArray(char) && Array.isArray(above)) {
-        lines[y][x].push(...above);
+
+        lines[y][x] = val;
       }
     }
-
-    console.log(y);
-    // console.log(lines[y].join(''));
   }
-
-  console.log(lines.map((d) => d.join(' ')).join('\n'));
-  console.log({ n });
+  const lastLine = lines.pop();
+  const total = lastLine.reduce((acc, curr) => acc + curr, 0);
+  console.log({ total });
 });
